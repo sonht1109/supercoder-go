@@ -7,6 +7,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/sonht1109/supercoder-go/internal/agent"
+	"github.com/sonht1109/supercoder-go/internal/utils"
 )
 
 type TerminalChat struct{}
@@ -16,43 +17,31 @@ func clearScreen() {
 	fmt.Print("\033[H")  // Move cursor to top-left
 }
 
-func blue(text string) string {
-	return "\033[34m" + text + "\033[0m"
-}
-
-func bold(text string) string {
-	return "\033[1m" + text + "\033[0m"
-}
-
-func underline(text string) string {
-	return "\033[4m" + text + "\033[0m"
-}
-
-func printHeader(agent agent.BaseChatAgent) {
+func printHeader(agent agent.ChatAgent) {
 	clearScreen()
-	fmt.Println(blue("█▀ █░█ █▀█ █▀▀ █▀█ █▀▀ █▀█ █▀▄ █▀▀ █▀█"))
-	fmt.Println(blue("▄█ █▄█ █▀▀ ██▄ █▀▄ █▄▄ █▄█ █▄▀ ██▄ █▀▄"))
-	fmt.Println(blue("v1.0.0")) // Replace with BuildInfo equivalent if needed
+	fmt.Println(utils.Blue("█▀ █░█ █▀█ █▀▀ █▀█ █▀▀ █▀█ █▀▄ █▀▀ █▀█"))
+	fmt.Println(utils.Blue("▄█ █▄█ █▀▀ ██▄ █▀▄ █▄▄ █▄█ █▄▀ ██▄ █▀▄"))
+	fmt.Println(utils.Blue("v1.0.0")) // Replace with BuildInfo equivalent if needed
 	fmt.Println()
-	fmt.Println(blue("Model: " + agent.Model))
-	fmt.Println(blue("Type '/help' for available commands.\n"))
+	fmt.Println(utils.Blue("Model: " + agent.Model))
+	fmt.Println(utils.Blue("Type '/help' for available commands.\n"))
 }
 
 func showHelp() {
-	fmt.Println(underline("Available commands:"))
-	fmt.Println("  " + bold("/help") + "  - Display this help message")
-	fmt.Println("  " + bold("/clear") + " - Clear the terminal screen")
-	fmt.Println("  " + bold("exit") + "\t- Terminate the chat session")
-	fmt.Println("  " + bold("bye") + "\t- Terminate the chat session\n")
+	fmt.Println(utils.Underline("Available commands:"))
+	fmt.Println("  " + utils.Bold("/help") + "  - Display this help message")
+	fmt.Println("  " + utils.Bold("/clear") + " - Clear the terminal screen")
+	fmt.Println("  " + utils.Bold("exit") + "\t- Terminate the chat session")
+	fmt.Println("  " + utils.Bold("bye") + "\t- Terminate the chat session\n")
 	fmt.Println("Just type any message to chat with the agent.")
 	fmt.Println("To insert a new line in your message, use Shift+Enter (may vary by terminal).")
 }
 
-func Run(agent agent.BaseChatAgent) {
+func Run(agent agent.ChatAgent) {
 	printHeader(agent)
 
 	rl, err := readline.NewEx(&readline.Config{
-		Prompt:          bold("> "),
+		Prompt:          utils.Bold("> "),
 		HistoryFile:     "/tmp/readline.tmp", // Optional
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
@@ -66,7 +55,7 @@ func Run(agent agent.BaseChatAgent) {
 	for {
 		line, err := rl.Readline()
 		if err != nil { // Handle Ctrl+C or EOF
-			fmt.Println(blue("\nChat session terminated. Goodbye!"))
+			fmt.Println(utils.Blue("\nChat session terminated. Goodbye!"))
 			break
 		}
 
@@ -80,7 +69,7 @@ func Run(agent agent.BaseChatAgent) {
 			clearScreen()
 			printHeader(agent)
 		case "exit", "bye":
-			fmt.Println(blue("\nChat session terminated. Goodbye!"))
+			fmt.Println(utils.Blue("\nChat session terminated. Goodbye!"))
 			return
 		default:
 			agent.Chat(input)

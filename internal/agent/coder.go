@@ -1,5 +1,11 @@
 package agent
 
+import (
+	"fmt"
+
+	"github.com/sonht1109/supercoder-go/internal/tools"
+)
+
 // var coderAgentPrompt = `
 // You are a senior software engineer AI agent. Your task is to help the user with their coding needs.
 
@@ -21,44 +27,32 @@ package agent
 // project if you are unsure before giving an answer.
 // `
 
-var basePrompt = "You are a helpful assistant."
+var basePrompt = fmt.Sprintf(`
+  You are a senior software engineer AI agent. Your task is to help the user with their coding needs.
+  You have access to the following tools:
+  - %s: %s
+  - %s: %s
+
+  You can use combination of these tools to help you with the user's request.
+
+  The discussion is about the code of the current project/folder. Always use the relevant tool to learn about the project if you are unsure before giving answer.
+`, tools.CodeEditToolName, tools.CodeEditToolDescription, tools.FileReadToolName, tools.FileReadToolDescription)
 
 type CoderAgent struct {
-	BaseChatAgent
-	AvailableTools []any
+	ChatAgent
 }
 
 func NewCoderAgent(additionalPrompt string, model string) *CoderAgent {
 	agent := &CoderAgent{
-		BaseChatAgent: *NewBaseChatAgent(basePrompt),
+		ChatAgent: *NewChatAgent(basePrompt),
 	}
 	agent.Prompt = basePrompt + additionalPrompt
 	agent.Model = model
-	// agent.availableTools = []Tool{
-	// 	CodeSearchTool{},
-	// 	ProjectStructureTool{},
-	// 	FileReadTool{},
-	// 	CodeEditTool{},
-	// 	CommandExecutionTool{},
-	// 	UrlFetchTool{},
-	// 	WebSearchTool{},
-	// }
+	availableTools := make(map[string]tools.Tool)
+	availableTools[tools.CodeEditToolName] = tools.NewCodeEditTool()
+	availableTools[tools.FileReadToolName] = tools.NewFileReadTool()
+
+	agent.AvailableTools = availableTools
+
 	return agent
 }
-
-// func (a *CoderAgent) ToolDefinitionList() []FunctionDefinition {
-// 	defs := []FunctionDefinition{}
-// 	for _, tool := range a.availableTools {
-// 		defs = append(defs, tool.Definition())
-// 	}
-// 	return defs
-// }
-
-// func (a *CoderAgent) ToolExecution(call ToolCallDescription) (string, error) {
-// 	for _, tool := range a.availableTools {
-// 		if tool.Definition().Name == call.Name {
-// 			return tool.Execute(call.Arguments)
-// 		}
-// 	}
-// 	return "", fmt.Errorf("Tool %s not found", call.Name)
-// }

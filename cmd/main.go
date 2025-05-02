@@ -18,5 +18,5 @@ func main() {
 	// }
 
 	agent := agent.NewCoderAgent(additionalPrompt, "gpt-4o-mini")
-	ui.Run(agent.BaseChatAgent)
+	ui.Run(agent.ChatAgent)
 }

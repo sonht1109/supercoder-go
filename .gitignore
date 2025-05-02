@@ -24,3 +24,5 @@ tmp/
 # Env file
 .env
 bin
+
+exp
