@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/sonht1109/supercoder-go/internal/utils"
 )
 
 type CodeEditToolArguments struct {
@@ -24,7 +26,7 @@ func (t *CodeEditTool) Execute(arguments string) string {
 		return fmt.Sprintf("Error: Invalid arguments - %v", err)
 	}
 
-	fmt.Printf("\033[32m✏️ Editing file: %s\033[0m\n", args.FilePath)
+	fmt.Printf(utils.Green("✏️ Editing file: %s"), args.FilePath)
 
 	// Ensure the directory exists
 	dir := filepath.Dir(args.FilePath)

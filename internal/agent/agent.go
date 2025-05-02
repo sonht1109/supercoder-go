@@ -35,7 +35,7 @@ const BasePrompt = `
   {"name": <function-name>, "arguments": "<json-encoded-string-of-the-arguments>"}
   </@TOOL>
 
-  The arguments value is ALWAYS a JSON-encoded string, when there is no arguments, use empty string "".
+  The arguments value is ALWAYS a JSON-encoded string, when there is no arguments, use empty string "". Do not skip any slash or quote.
 
   For example:
   <@TOOL>

@@ -17,6 +17,6 @@ func main() {
 	// 	additionalPrompt = LoadCursorRules()
 	// }
 
-	agent := agent.NewCoderAgent(additionalPrompt, "gpt-4o-mini")
+	agent := agent.NewCoderAgent(additionalPrompt, "gpt-4.1-nano")
 	ui.Run(agent.ChatAgent)
 }
