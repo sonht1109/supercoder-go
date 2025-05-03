@@ -9,7 +9,7 @@ import (
 )
 
 type FileReadToolArguments struct {
-	FilePath string `json:"filepath"`
+	FilePath string `json:"filePath"`
 }
 
 type FileReadTool struct{}
@@ -18,15 +18,19 @@ func NewFileReadTool() *FileReadTool {
 	return &FileReadTool{}
 }
 
-func (t *FileReadTool) Execute(arguments string) string {
+func (t *FileReadTool) Execute(arguments map[string]any) string {
 
-	fmt.Println(utils.Green("📂 Reading file: ${fileName}"))
+	jsonData, err := json.Marshal(arguments)
+	if err != nil {
+		return fmt.Sprintf("Error: Invalid arguments - %v", err)
+	}
 
 	var args FileReadToolArguments
-	err := json.Unmarshal([]byte(arguments), &args)
-	if err != nil {
+	if err := json.Unmarshal(jsonData, &args); err != nil {
 		return "Error: Invalid arguments"
 	}
+
+	fmt.Printf(utils.Green("📂 Reading file: %s\n"), args.FilePath)
 
 	fileContent, err := os.ReadFile(args.FilePath)
 	if err != nil {

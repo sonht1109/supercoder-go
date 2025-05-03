@@ -26,7 +26,7 @@ func NewProjectStructureTool() *ProjectStructureTool {
 	}
 }
 
-func (pst *ProjectStructureTool) Execute(arguments string) string {
+func (pst *ProjectStructureTool) Execute(arguments map[string]any) string {
 	fmt.Println(utils.Blue("🔎 Reading project structure..."))
 	pst.loadGitignore()
 	result := pst.buildProjectTree(".", 0)
@@ -121,8 +121,6 @@ func (pst *ProjectStructureTool) buildProjectTree(root string, depth int) string
 	for _, f := range files {
 		builder.WriteString(fmt.Sprintf("%s├── %s\n", prefix, f.Name()))
 	}
-
-	fmt.Println(builder.String())
 
 	return builder.String()
 }

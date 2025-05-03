@@ -26,6 +26,7 @@ func printHeader(agent agent.ChatAgent) {
 	fmt.Println()
 	fmt.Println(utils.Blue("Model: " + agent.Model))
 	fmt.Println(utils.Blue("Type '/help' for available commands.\n"))
+	fmt.Println("====>", global.Cfg.OpenAIAPIKey)
 }
 
 func showHelp() {

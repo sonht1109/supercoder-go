@@ -16,7 +16,7 @@ var coderBasePrompt = fmt.Sprintf(`
   - %s: %s
   - %s: %s
 
-  You can use these tools to help you with the user's request. ONLY use the tools listed above.
+  You can use these tools to help you with the user's request.
 
   When using the web-search tool, make sure you also use the url-fetch tool to read the content of the result URLs if needed.
 

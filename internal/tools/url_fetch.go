@@ -19,9 +19,15 @@ func NewURLFetchTool() *URLFetchTool {
 	return &URLFetchTool{}
 }
 
-func (t *URLFetchTool) Execute(arguments string) string {
+func (t *URLFetchTool) Execute(arguments map[string]any) string {
+
+	jsonData, err := json.Marshal(arguments)
+	if err != nil {
+		return fmt.Sprintf("Error: Invalid arguments - %v", err)
+	}
+
 	var args URLFetchToolArguments
-	if err := json.Unmarshal([]byte(arguments), &args); err != nil {
+	if err := json.Unmarshal(jsonData, &args); err != nil {
 		return fmt.Sprintf("Error: Invalid arguments - %v", err)
 	}
 

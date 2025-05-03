@@ -22,7 +22,12 @@ func NewWebSearchTool() *WebSearchTool {
 	return &WebSearchTool{}
 }
 
-func (t *WebSearchTool) Execute(arguments string) string {
+func (t *WebSearchTool) Execute(arguments map[string]any) string {
+
+	jsonData, err := json.Marshal(arguments)
+	if err != nil {
+		return fmt.Sprintf("Error: Invalid arguments - %v", err)
+	}
 
 	baseURL := global.Cfg.SearxngBaseURL
 	if baseURL == "" {
@@ -30,8 +35,7 @@ func (t *WebSearchTool) Execute(arguments string) string {
 	}
 
 	var args WebSearchToolArguments
-	err := json.Unmarshal([]byte(arguments), &args)
-	if err != nil {
+	if err := json.Unmarshal(jsonData, &args); err != nil {
 		return "Error parsing arguments: " + err.Error()
 	}
 

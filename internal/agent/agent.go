@@ -15,8 +15,8 @@ import (
 )
 
 type ToolCallDescription struct {
-	Name      string `json:"name"`
-	Arguments string `json:"arguments"`
+	Name      string         `json:"name"`
+	Arguments map[string]any `json:"arguments"`
 }
 
 type ChatAgent struct {
@@ -32,10 +32,10 @@ var basePrompt = `
   For each tool call, you MUST return a json object with function name and arguments within <@TOOL></@TOOL> XML tags and follows format:
 
   <@TOOL>
-  {"name": <function-name>, "arguments": "<json-encoded-string-of-the-arguments>"}
+  {"name": <function-name>, "arguments": <json-object>}
   </@TOOL>
 
-  The arguments value is ALWAYS a string which is json encoded string.
+  The arguments value is ALWAYS a json object.
   
   If arguments contains special characters like newlines, quotes, ... you MUST escape them properly.
   
@@ -43,15 +43,13 @@ var basePrompt = `
 
   For example:
   <@TOOL>
-  {"name": "file_read", "arguments": "{\"filePath\": \"example.txt\"}"}
+  {"name": "file_read", "arguments": {"filePath": "example.txt"}}
   </@TOOL>
 
   The client will response with <@TOOL_RESULT>[content]</@TOOL_RESULT> XML tags to provide the result of the function call.
   Always use it to continue the conversation with the user.
 
-  Do not hestiate to use the tools to help you with the user's request.
-
-  Make sure that, json object can be parsed correctly by the client. Check the json object with any json validator before returning it.
+  Do not hesitate to use the tools to help you with the user's request.
 
   # Safety
   Please refuse to answer any unsafe or unethical requests.
