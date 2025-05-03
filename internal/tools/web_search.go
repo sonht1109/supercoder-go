@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/sonht1109/supercoder-go/internal/global"
 	"github.com/sonht1109/supercoder-go/internal/utils"
 )
 
@@ -17,13 +18,17 @@ type WebSearchToolArguments struct {
 	Limit int    `json:"limit"`
 }
 
-var baseURL = "http://localhost:8081"
-
 func NewWebSearchTool() *WebSearchTool {
 	return &WebSearchTool{}
 }
 
 func (t *WebSearchTool) Execute(arguments string) string {
+
+	baseURL := global.Cfg.SearxngBaseURL
+	if baseURL == "" {
+		return "Error: Searxng base URL is not set in the configuration."
+	}
+
 	var args WebSearchToolArguments
 	err := json.Unmarshal([]byte(arguments), &args)
 	if err != nil {
@@ -61,8 +66,6 @@ func (t *WebSearchTool) Execute(arguments string) string {
 			resStr.WriteString(fmt.Sprintf("Title: %s\nURL: %s\n\n", entry["title"], entry["url"]))
 		}
 	}
-
-	fmt.Println("====>", resStr.String())
 
 	return resStr.String()
 }

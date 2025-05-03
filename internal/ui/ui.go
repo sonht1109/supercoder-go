@@ -7,6 +7,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/sonht1109/supercoder-go/internal/agent"
+	"github.com/sonht1109/supercoder-go/internal/global"
 	"github.com/sonht1109/supercoder-go/internal/utils"
 )
 
@@ -21,7 +22,7 @@ func printHeader(agent agent.ChatAgent) {
 	clearScreen()
 	fmt.Println(utils.Blue("█▀ █░█ █▀█ █▀▀ █▀█ █▀▀ █▀█ █▀▄ █▀▀ █▀█"))
 	fmt.Println(utils.Blue("▄█ █▄█ █▀▀ ██▄ █▀▄ █▄▄ █▄█ █▄▀ ██▄ █▀▄"))
-	fmt.Println(utils.Blue("v1.0.0")) // Replace with BuildInfo equivalent if needed
+	fmt.Println(utils.Blue(global.Cfg.Version)) // Replace with BuildInfo equivalent if needed
 	fmt.Println()
 	fmt.Println(utils.Blue("Model: " + agent.Model))
 	fmt.Println(utils.Blue("Type '/help' for available commands.\n"))
@@ -72,7 +73,7 @@ func Run(agent agent.ChatAgent) {
 			fmt.Println(utils.Blue("\nChat session terminated. Goodbye!"))
 			return
 		default:
-			agent.Chat(input)
+			agent.ChatStream(input)
 		}
 	}
 }

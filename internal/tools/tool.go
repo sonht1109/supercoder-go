@@ -6,7 +6,9 @@ type Tool interface {
 
 const CodeEditToolName = "code_edit"
 
-const CodeEditToolDescription = `Edit/update a code file in the repository. Provide the file path and the new content for the file. Arguments: {"filepath": "<file-path>", "content": "<new-content>"}`
+// const CodeEditToolDescription = `Edit/update a code file in the repository. You can create file if file does not exist yet. Provide the file path and the new content for the file. Arguments: ["<file-path>","<new-content>"]`
+
+const CodeEditToolDescription = `Edit/update a code file in the repository. You can create file if file does not exist yet. Provide the file path and the new content for the file. Arguments: {\"filePath\": \"<file-path>\", \"content\": \"<new-content>\"}`
 
 const FileReadToolName = "file_read"
 
@@ -14,7 +16,7 @@ const FileReadToolDescription = `Read a file to understand its content. Use this
 
 const ProjectStructureToolName = "project_structure"
 
-const ProjectStructureToolDescription = `Analyze the project structure. Use this tool to analyze the project structure and understand its content. Arguments: {}`
+const ProjectStructureToolDescription = `Analyze the project structure. Use this tool to analyze the project structure. Arguments: {}`
 
 const CodeSearchToolName = "code_search"
 

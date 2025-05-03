@@ -10,7 +10,7 @@ import (
 )
 
 type CodeEditToolArguments struct {
-	FilePath string `json:"filepath"`
+	FilePath string `json:"filePath"`
 	Content  string `json:"content"`
 }
 
@@ -39,5 +39,5 @@ func (t *CodeEditTool) Execute(arguments string) string {
 		return fmt.Sprintf("Error editing file: %v", err)
 	}
 
-	return fmt.Sprintf("Successfully edited file: %s", args.FilePath)
+	return fmt.Sprintf("File %s is edited with content: %s", args.FilePath, args.Content)
 }

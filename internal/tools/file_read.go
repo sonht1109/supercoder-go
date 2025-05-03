@@ -2,7 +2,10 @@ package tools
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
+
+	"github.com/sonht1109/supercoder-go/internal/utils"
 )
 
 type FileReadToolArguments struct {
@@ -16,6 +19,9 @@ func NewFileReadTool() *FileReadTool {
 }
 
 func (t *FileReadTool) Execute(arguments string) string {
+
+	fmt.Println(utils.Green("📂 Reading file: ${fileName}"))
+
 	var args FileReadToolArguments
 	err := json.Unmarshal([]byte(arguments), &args)
 	if err != nil {

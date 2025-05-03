@@ -27,32 +27,38 @@ type ChatAgent struct {
 	AvailableTools map[string]tools.Tool
 }
 
-const BasePrompt = `
+var basePrompt = `
   # Tool calling
-  For each function call, return a json object with function name and arguments within <@TOOL></@TOOL> XML tags:
+  For each tool call, you MUST return a json object with function name and arguments within <@TOOL></@TOOL> XML tags and follows format:
 
   <@TOOL>
   {"name": <function-name>, "arguments": "<json-encoded-string-of-the-arguments>"}
   </@TOOL>
 
-  The arguments value is ALWAYS a JSON-encoded string, when there is no arguments, use empty string "". Do not skip any slash or quote.
+  The arguments value is ALWAYS a string which is json encoded string.
+  
+  If arguments contains special characters like newlines, quotes, ... you MUST escape them properly.
+  
+  When there is no arguments, use empty string "".
 
   For example:
   <@TOOL>
   {"name": "file_read", "arguments": "{\"filePath\": \"example.txt\"}"}
   </@TOOL>
 
-  <@TOOL>
-  {"name": "project_structure", "arguments": ""}
-  </@TOOL>
-
   The client will response with <@TOOL_RESULT>[content]</@TOOL_RESULT> XML tags to provide the result of the function call.
-  Use it to continue the conversation with the user.
+  Always use it to continue the conversation with the user.
+
+  Do not hestiate to use the tools to help you with the user's request.
+
+  Make sure that, json object can be parsed correctly by the client. Check the json object with any json validator before returning it.
 
   # Safety
   Please refuse to answer any unsafe or unethical requests.
   Do not execute any command that could harm the system or access sensitive information.
   When you want to execute some potentially unsafe command, please ask for user confirmation first before generating the tool call instruction.
+
+  Do not break any rules above, otherwise you will be fired.
 
   # Agent Instructions
 `
@@ -73,7 +79,7 @@ func (agent *ChatAgent) AddMessageIntoHistory(message string, role string) {
 	})
 }
 
-func (agent *ChatAgent) Chat(message string) {
+func (agent *ChatAgent) ChatStream(message string) {
 
 	if message != "" {
 		agent.AddMessageIntoHistory(message, openai.ChatMessageRoleUser)
@@ -85,7 +91,7 @@ func (agent *ChatAgent) Chat(message string) {
 	messages := []openai.ChatCompletionMessage{
 		{
 			Role:    openai.ChatMessageRoleSystem,
-			Content: BasePrompt + agent.Prompt,
+			Content: basePrompt + agent.Prompt,
 		},
 	}
 	messages = append(messages, agent.ChatHistories...)
@@ -115,8 +121,6 @@ func (agent *ChatAgent) Chat(message string) {
 		}
 		content := resp.Choices[0].Delta.Content
 
-		fmt.Print(utils.Red(content))
-
 		buffer.WriteString(content)
 
 		// handle tool tag logic
@@ -127,6 +131,8 @@ func (agent *ChatAgent) Chat(message string) {
 
 			// if receiving full tool call content, handle it
 			if strings.Contains(toolContent, toolTagEnd) {
+				fmt.Print(utils.Red(toolContent))
+
 				rawDesc := strings.TrimSpace(strings.Split(toolContent, toolTagEnd)[0])
 
 				var toolDesc ToolCallDescription
@@ -147,7 +153,7 @@ func (agent *ChatAgent) Chat(message string) {
 			isInToolTag = strings.Contains(bufferContent, toolTagStart)
 
 			// print out content
-			// fmt.Print(utils.Blue(content))
+			fmt.Print(utils.Blue(content))
 		}
 	}
 
@@ -163,7 +169,10 @@ func (agent *ChatAgent) handleToolCall(toolDesc ToolCallDescription) {
 
 	toolRes := selectedTool.Execute(toolDesc.Arguments)
 
-	agent.AddMessageIntoHistory(fmt.Sprintf("Calling %s tool ...", toolDesc.Name), openai.ChatMessageRoleAssistant)
+	agent.AddMessageIntoHistory(
+		fmt.Sprintf("Called %s tool successfully", toolDesc.Name),
+		openai.ChatMessageRoleAssistant,
+	)
 	agent.AddMessageIntoHistory(
 		fmt.Sprintf("<@TOOL_RESULT>%s</@TOOL_RESULT>", toolRes),
 		openai.ChatMessageRoleUser,

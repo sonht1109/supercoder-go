@@ -6,16 +6,17 @@ import (
 	"github.com/sonht1109/supercoder-go/internal/tools"
 )
 
-var basePrompt = fmt.Sprintf(`
-  You are a senior software engineer AI agent. Your task is to help the user with their coding needs.
+var coderBasePrompt = fmt.Sprintf(`
+  You are a senior software engineer AI agent. Your task is to help the user with their coding needs mostly around their repository.
   You have access to the following tools:
   - %s: %s
   - %s: %s
   - %s: %s
   - %s: %s
   - %s: %s
+  - %s: %s
 
-  You can use these tools to help you with the user's request.
+  You can use these tools to help you with the user's request. ONLY use the tools listed above.
 
   When using the web-search tool, make sure you also use the url-fetch tool to read the content of the result URLs if needed.
 
@@ -25,6 +26,7 @@ var basePrompt = fmt.Sprintf(`
 	tools.CodeSearchToolName, tools.CodeSearchToolDescription,
 	tools.WebSearchToolName, tools.WebSearchToolDescription,
 	tools.URLFetchToolName, tools.URLFetchToolDescription,
+	tools.ProjectStructureToolName, tools.ProjectStructureToolDescription,
 )
 
 type CoderAgent struct {
@@ -33,9 +35,9 @@ type CoderAgent struct {
 
 func NewCoderAgent(additionalPrompt string, model string) *CoderAgent {
 	agent := &CoderAgent{
-		ChatAgent: *NewChatAgent(basePrompt),
+		ChatAgent: *NewChatAgent(coderBasePrompt),
 	}
-	agent.Prompt = basePrompt + additionalPrompt
+	agent.Prompt = coderBasePrompt + additionalPrompt
 	agent.Model = model
 
 	availableTools := make(map[string]tools.Tool)
@@ -43,6 +45,8 @@ func NewCoderAgent(additionalPrompt string, model string) *CoderAgent {
 	availableTools[tools.FileReadToolName] = tools.NewFileReadTool()
 	availableTools[tools.CodeSearchToolName] = tools.NewSearchCodeTool()
 	availableTools[tools.WebSearchToolName] = tools.NewWebSearchTool()
+	availableTools[tools.URLFetchToolName] = tools.NewURLFetchTool()
+	availableTools[tools.ProjectStructureToolName] = tools.NewProjectStructureTool()
 
 	agent.AvailableTools = availableTools
 
