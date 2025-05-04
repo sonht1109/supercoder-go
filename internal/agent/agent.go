@@ -17,6 +17,7 @@ import (
 type ToolCallDescription struct {
 	Name      string         `json:"name"`
 	Arguments map[string]any `json:"arguments"`
+	ID        string         `json:"id"`
 }
 
 type ChatAgent struct {
@@ -29,25 +30,20 @@ type ChatAgent struct {
 
 var basePrompt = `
   # Tool calling
-  For each tool call, you MUST return a json object with function name and arguments within <@TOOL></@TOOL> XML tags and follows format:
+  For each function call, you MUST return a json object with function name and arguments within <@TOOL></@TOOL> XML tags and follows format:
 
   <@TOOL>
-  {"name": <function-name>, "arguments": <json-object>}
+  {"name": <function-name>, "arguments": <json-object>, "id": <function-id>}
   </@TOOL>
 
-  The arguments value is ALWAYS a json object.
-  
-  If arguments contains special characters like newlines, quotes, ... you MUST escape them properly.
-  
-  When there is no arguments, use empty string "".
+  The arguments value is ALWAYS a json object. When there is no arguments, use empty string "".
 
   For example:
   <@TOOL>
   {"name": "file_read", "arguments": {"filePath": "example.txt"}}
   </@TOOL>
 
-  The client will response with <@TOOL_RESULT>[content]</@TOOL_RESULT> XML tags to provide the result of the function call.
-  Always use it to continue the conversation with the user.
+  Function ID is a unique identifier for each function call. It is used to track the function call and its response. The ID should be a UUID v4 format.
 
   Do not hesitate to use the tools to help you with the user's request.
 
@@ -70,17 +66,24 @@ func NewChatAgent(prompt string) *ChatAgent {
 	}
 }
 
-func (agent *ChatAgent) AddMessageIntoHistory(message string, role string) {
+func (agent *ChatAgent) AddMessageIntoHistory(
+	message string,
+	role string,
+	toolCalls []openai.ToolCall,
+	toolCallID string,
+) {
 	agent.ChatHistories = append(agent.ChatHistories, openai.ChatCompletionMessage{
-		Role:    role,
-		Content: message,
+		Role:       role,
+		Content:    message,
+		ToolCalls:  toolCalls,
+		ToolCallID: toolCallID,
 	})
 }
 
 func (agent *ChatAgent) ChatStream(message string) {
 
 	if message != "" {
-		agent.AddMessageIntoHistory(message, openai.ChatMessageRoleUser)
+		agent.AddMessageIntoHistory(message, openai.ChatMessageRoleUser, nil, "")
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -105,8 +108,10 @@ func (agent *ChatAgent) ChatStream(message string) {
 	}
 	defer stream.Close()
 
-	var buffer strings.Builder
+	var checkToolContent strings.Builder
 	var currentToolContent strings.Builder
+	var tools []ToolCallDescription
+	var currentContent strings.Builder
 
 	isInToolTag := false
 	toolTagStart := "<@TOOL>"
@@ -119,7 +124,8 @@ func (agent *ChatAgent) ChatStream(message string) {
 		}
 		content := resp.Choices[0].Delta.Content
 
-		buffer.WriteString(content)
+		checkToolContent.WriteString(content)
+		currentContent.WriteString(content)
 
 		// handle tool tag logic
 		if isInToolTag {
@@ -129,7 +135,9 @@ func (agent *ChatAgent) ChatStream(message string) {
 
 			// if receiving full tool call content, handle it
 			if strings.Contains(toolContent, toolTagEnd) {
-				fmt.Print(utils.Red(toolContent))
+				if global.Cfg.Debug {
+					fmt.Print(utils.Red(toolContent))
+				}
 
 				rawDesc := strings.TrimSpace(strings.Split(toolContent, toolTagEnd)[0])
 
@@ -139,15 +147,15 @@ func (agent *ChatAgent) ChatStream(message string) {
 					fmt.Println("Error unmarshalling tool call description:", err)
 				}
 
-				agent.handleToolCall(toolDesc)
+				tools = append(tools, toolDesc)
 
 				currentToolContent.Reset()
-				buffer.Reset()
+				checkToolContent.Reset()
 				isInToolTag = false
 			}
 
 		} else {
-			bufferContent := buffer.String()
+			bufferContent := checkToolContent.String()
 			isInToolTag = strings.Contains(bufferContent, toolTagStart)
 
 			// print out content
@@ -156,6 +164,17 @@ func (agent *ChatAgent) ChatStream(message string) {
 	}
 
 	fmt.Print("\n")
+
+	agent.AddMessageIntoHistory(
+		currentContent.String(),
+		openai.ChatMessageRoleAssistant,
+		nil,
+		"",
+	)
+
+	for _, toolDesc := range tools {
+		agent.handleToolCall(toolDesc)
+	}
 }
 
 func (agent *ChatAgent) handleToolCall(toolDesc ToolCallDescription) {
@@ -167,12 +186,30 @@ func (agent *ChatAgent) handleToolCall(toolDesc ToolCallDescription) {
 
 	toolRes := selectedTool.Execute(toolDesc.Arguments)
 
+	encodedToolArgs, err := json.Marshal(toolDesc.Arguments)
+	if err != nil {
+		fmt.Println("Error marshalling tool arguments:", err)
+		return
+	}
+
 	agent.AddMessageIntoHistory(
-		fmt.Sprintf("Called %s tool successfully", toolDesc.Name),
+		fmt.Sprintf("Called %s tool with ID %s successfully", toolDesc.Name, toolDesc.ID),
 		openai.ChatMessageRoleAssistant,
+		[]openai.ToolCall{
+			{ID: toolDesc.ID, Type: openai.ToolTypeFunction, Function: openai.FunctionCall{
+				Name:      toolDesc.Name,
+				Arguments: string(encodedToolArgs),
+			}},
+		},
+		"",
 	)
+
 	agent.AddMessageIntoHistory(
-		fmt.Sprintf("<@TOOL_RESULT>%s</@TOOL_RESULT>", toolRes),
-		openai.ChatMessageRoleUser,
+		toolRes,
+		openai.ChatMessageRoleTool,
+		nil,
+		toolDesc.ID,
 	)
+
+	fmt.Println(utils.Blue(toolRes))
 }

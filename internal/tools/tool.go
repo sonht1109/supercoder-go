@@ -4,7 +4,7 @@ type Tool interface {
 	Execute(arguments map[string]any) string
 }
 
-const CodeEditToolName = "code_edit"
+const CodeEditToolName = "file_edit"
 
 const CodeEditToolDescription = `Edit/update a code file in the repository. You can create file if file does not exist yet. Provide the file path and the new content for the file. Arguments: {"filePath": "<file-path>", "content": "<new-content>"}`
 

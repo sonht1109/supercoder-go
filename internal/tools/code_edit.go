@@ -45,5 +45,5 @@ func (t *CodeEditTool) Execute(arguments map[string]any) string {
 		return fmt.Sprintf("Error editing file: %v", err)
 	}
 
-	return fmt.Sprintf("File %s is edited with content: %s", args.FilePath, args.Content)
+	return fmt.Sprintf("Edited file %s successfully", args.FilePath)
 }

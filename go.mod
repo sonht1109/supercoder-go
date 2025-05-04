@@ -4,6 +4,7 @@ go 1.23.4
 
 require (
 	github.com/chzyer/readline v1.5.1
+	github.com/joho/godotenv v1.5.1
 	github.com/sashabaranov/go-openai v1.39.0
 )
 

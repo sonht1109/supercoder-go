@@ -27,7 +27,7 @@ func NewProjectStructureTool() *ProjectStructureTool {
 }
 
 func (pst *ProjectStructureTool) Execute(arguments map[string]any) string {
-	fmt.Println(utils.Blue("🔎 Reading project structure..."))
+	fmt.Println(utils.Green("🔎 Reading project structure..."))
 	pst.loadGitignore()
 	result := pst.buildProjectTree(".", 0)
 	return result
