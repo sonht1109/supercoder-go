@@ -112,6 +112,7 @@ func (agent *ChatAgent) ChatStream(message string) {
 	var currentToolContent strings.Builder
 	var tools []ToolCallDescription
 	var currentContent strings.Builder
+	var contentWithoutToolTag string
 
 	isInToolTag := false
 	toolTagStart := "<@TOOL>"
@@ -155,15 +156,21 @@ func (agent *ChatAgent) ChatStream(message string) {
 			}
 
 		} else {
+			contentWithoutToolTag = contentWithoutToolTag + content
 			bufferContent := checkToolContent.String()
 			isInToolTag = strings.Contains(bufferContent, toolTagStart)
 
-			// print out content
-			fmt.Print(utils.Blue(content))
+			if len(contentWithoutToolTag) > len(toolTagStart) {
+				safeContent := contentWithoutToolTag[:len(contentWithoutToolTag)-len(toolTagStart)-1]
+
+				// Print out content
+				fmt.Print(utils.Blue(safeContent))
+				contentWithoutToolTag = contentWithoutToolTag[len(safeContent):]
+			}
 		}
 	}
 
-	fmt.Print("\n")
+	fmt.Println(utils.Blue(strings.Replace(contentWithoutToolTag, toolTagStart, "", -1)))
 
 	agent.AddMessageIntoHistory(
 		currentContent.String(),
