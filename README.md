@@ -26,7 +26,7 @@ export MODEL=<MODEL>
 
 If you want to perform web search tool, please add
 ```bash
-export SEARXNG_BASE_URL=<SEARXNG> // default value is "https://searx.be" but it is mostly failed to call. Best choice is to self host searxng by your self.
+export SEARXNG_BASE_URL=<SEARXNG_URL> // default value is "https://searx.be" but it is mostly failed to call. Best choice is to self host searxng by your self.
 ```
 
 ### Usage
