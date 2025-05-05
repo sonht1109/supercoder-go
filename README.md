@@ -3,11 +3,10 @@ A fork of [huytd/supercoder](https://github.com/huytd/supercoder) but in Golang.
 
 ### Installation
 1. Download file that works with your OS:
-```bash
-curl -sSL https://sonht1109.github.io/supercoder-go/install.sh
-```
 
-One file named `supercoder-go` will be downloaded in your machine
+Visit https://github.com/sonht1109/supercoder-go/releases
+
+Download file and rename it to `supercoder-go` or whatever you want.
 
 2. Make that file executable:
 
