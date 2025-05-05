@@ -14,10 +14,7 @@ var AppConfig any
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	godotenv.Load() // use for development
 
 	config.NewConfig()
 
