@@ -24,6 +24,11 @@ export OPENAI_API_KEY=<API_KEY>
 export MODEL=<MODEL>
 ```
 
+If you want to perform web search tool, please add
+```bash
+export SEARXNG_BASE_URL=<SEARXNG> // default value is "https://searx.be" but it is mostly failed to call. Best choice is to self host searxng by your self.
+```
+
 ### Usage
 In your terminal, type:
 ```bash
