@@ -1,6 +1,8 @@
 # Supercoder-go
 A fork of [huytd/supercoder](https://github.com/huytd/supercoder) but in Golang.
 
+<img width="550" alt="SCR-20250506-mrnh" src="https://github.com/user-attachments/assets/ed374f46-e0e8-4523-a56f-42a2e9767d7a" />
+
 ### Installation
 1. Download file that works with your OS:
 
