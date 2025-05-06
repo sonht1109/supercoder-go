@@ -32,7 +32,7 @@ func (t *CodeEditTool) Execute(arguments map[string]any) string {
 		return fmt.Sprintf("Error: Invalid arguments - %v", err)
 	}
 
-	fmt.Printf(utils.Green("✏️ Editing file: %s"), args.FilePath)
+	fmt.Printf(utils.Green("✏️ Editing file: %s\n"), args.FilePath)
 
 	// Ensure the directory exists
 	dir := filepath.Dir(args.FilePath)

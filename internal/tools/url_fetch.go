@@ -31,7 +31,7 @@ func (t *URLFetchTool) Execute(arguments map[string]any) string {
 		return fmt.Sprintf("Error: Invalid arguments - %v", err)
 	}
 
-	fmt.Printf(utils.Green("🌐 Fetching URL: %s"), args.URL)
+	fmt.Printf(utils.Green("🌐 Fetching URL: %s\n"), args.URL)
 
 	resp, err := http.Get(args.URL)
 	if err != nil {
