@@ -6,7 +6,11 @@ type Tool interface {
 
 const CodeEditToolName = "file_edit"
 
-const CodeEditToolDescription = `Edit/update a code file in the repository. You can create file if file does not exist yet. Provide the file path and the new content for the file. Arguments: {"filePath": "<file-path>", "content": "<new-content>"}`
+const CodeEditToolDescription = `Edit a code file in the repository. Provide the file path and the new content for the file. Arguments: {"filePath": "<file-path>", "content": "<new-content>"}. Always use the "file_read" tool to read proper files before editing.`
+
+const FileCreateToolName = "file_create"
+
+const FileCreateToolDescription = `Create a new file in the repository and add content into it. NO need to check or read file before creating. Arguments: {"filePath": "<file-path>", "content": "<new-content>"}`
 
 const FileReadToolName = "file_read"
 

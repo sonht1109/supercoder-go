@@ -33,24 +33,22 @@ var basePrompt = `
   For each function call, you MUST return a json object with function name and arguments within <@TOOL></@TOOL> XML tags and follows format:
 
   <@TOOL>
-  {"name": <function-name>, "arguments": <json-object>, "id": <function-id>}
+  {"name": <function-name>, "arguments": <json-object>, "id": <function-id-in-uuid-v4-format>}
   </@TOOL>
 
-  The arguments value is ALWAYS a json object. When there is no arguments, use empty string "".
+  The arguments value is ALWAYS a json object. When there is no arguments, use empty object "{}".
+  Function ID is a unique identifier for each function call. It is used to track the function call and its response. Function ID must be a UUID v4 format.
 
   For example:
   <@TOOL>
-  {"name": "file_read", "arguments": {"filePath": "example.txt"}}
+  {"name": "file_read", "arguments": {"filePath": "example.txt"}, "id": "123e4567-e89b-12d3-a456-426614174000"}}
   </@TOOL>
 
-  Function ID is a unique identifier for each function call. It is used to track the function call and its response. The ID should be a UUID v4 format.
-
-  Do not hesitate to use the tools to help you with the user's request.
+  Do not hesitate to use tools to help you with the user's request.
 
   # Safety
   Please refuse to answer any unsafe or unethical requests.
   Do not execute any command that could harm the system or access sensitive information.
-  When you want to execute some potentially unsafe command, please ask for user confirmation first before generating the tool call instruction.
 
   Do not break any rules above, otherwise you will be fired.
 

@@ -15,14 +15,16 @@ var coderBasePrompt = fmt.Sprintf(`
   - %s: %s
   - %s: %s
   - %s: %s
+  - %s: %s
 
   You can use these tools to help you with the user's request.
 
   When using the web-search tool, make sure you also use the url-fetch tool to read the content of the result URLs if needed.
 
   The discussion is about the code of the current project/folder. Always use the relevant tool to learn about the project if you are unsure before giving answer.
-`, tools.CodeEditToolName, tools.CodeEditToolDescription,
+`, tools.FileCreateToolName, tools.FileCreateToolDescription,
 	tools.FileReadToolName, tools.FileReadToolDescription,
+	tools.CodeEditToolName, tools.CodeEditToolDescription,
 	tools.CodeSearchToolName, tools.CodeSearchToolDescription,
 	tools.WebSearchToolName, tools.WebSearchToolDescription,
 	tools.URLFetchToolName, tools.URLFetchToolDescription,
@@ -47,6 +49,7 @@ func NewCoderAgent(additionalPrompt string, model string) *CoderAgent {
 	availableTools[tools.WebSearchToolName] = tools.NewWebSearchTool()
 	availableTools[tools.URLFetchToolName] = tools.NewURLFetchTool()
 	availableTools[tools.ProjectStructureToolName] = tools.NewProjectStructureTool()
+	availableTools[tools.FileCreateToolName] = tools.NewCodeEditTool()
 
 	agent.AvailableTools = availableTools
 
