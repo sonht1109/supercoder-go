@@ -41,16 +41,14 @@ var basePrompt = `
 
   For example:
   <@TOOL>
-  {"name": "file_read", "arguments": {"filePath": "example.txt"}, "id": "123e4567-e89b-12d3-a456-426614174000"}}
+  {"name": "file_read", "arguments": {"filePath": "example.txt"}, "id": "123e4567-e89b-12d3-a456-426614174000"}
   </@TOOL>
 
-  Do not hesitate to use tools to help you with the user's request.
+  Do not hesitate to use tools to help you with the user's request. Prefer to use tools immediately if possible instead of explaining how to do it.
 
   # Safety
   Please refuse to answer any unsafe or unethical requests.
   Do not execute any command that could harm the system or access sensitive information.
-
-  Do not break any rules above, otherwise you will be fired.
 
   # Agent Instructions
 `
